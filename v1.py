@@ -1,7 +1,9 @@
-#import tensorflow as tf
+import tensorflow as tf
 import argparse
 import glob
 import json
+
+#from __future__ import absolute_import, division, print_function, unicode_literals
 
 #commandline options
 def launch_options():
@@ -22,7 +24,16 @@ def launch_options():
     return arg
 
     
+class Trainer(object):
+    def __init__(self):
+        self.weight = tf.Variable(5.0)
+        self.bias = tf.Variable(0.0)
 
+    def __call__(self, x):
+            return self.weight * x + self.bias
+
+        #model = Trainer()
+        #assert model(3.0).numpy() == 15.0
 
 class no_name(object):
     def __init__(self):
@@ -60,9 +71,38 @@ class no_name(object):
 if __name__ == "__main__":
     arg_options = launch_options()
     test = no_name()
-    test.check_options(arg_options.file)
-    test.search_word(arg_options.synonym.upper()) #dictionary is all uppercase    
-     
+    #test.check_options(arg_options.file)
+    #test.search_word(arg_options.synonym.upper()) #dictionary is all uppercase    
+    #______________________TF TEST
+
+    def loss(predicted_y, target_y):
+          return tf.reduce_mean(tf.square(predicted_y - target_y))
+    TRUE_W = 3.0
+    TRUE_b = 2.0
+    NUM_EXAMPLES = 1000
+
+    inputs  = tf.random.normal(shape=[NUM_EXAMPLES])
+    noise   = tf.random.normal(shape=[NUM_EXAMPLES])
+    outputs = inputs * TRUE_W + TRUE_b + noise
+    def train(model, inputs, outputs, learning_rate):
+        with tf.GradientTape() as t:
+            current_loss = loss(model(inputs), outputs)
+        dW, db = t.gradient(current_loss, [model.weight, model.bias])
+        model.weight.assign_sub(learning_rate * dW)
+        model.bias.assign_sub(learning_rate * db)
+
+    model = Trainer()
+    Ws, bs = [], []
+    epochs = range(10)
+    for epoch in epochs:
+        Ws.append(model.weight.numpy())
+        bs.append(model.bias.numpy())
+        current_loss = loss(model(inputs), outputs)
+
+        train(model, inputs, outputs, learning_rate=0.1)
+        print('Epoch %2d: W=%1.2f b=%1.2f, loss=%2.5f' %
+             (epoch, Ws[-1], bs[-1], current_loss))
+    #________________________
     #Not always needed, only needed when recomputing the tables
     #processed_data = find_connections(data);
     #Synthetic neural mesh??
