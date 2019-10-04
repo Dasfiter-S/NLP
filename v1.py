@@ -34,10 +34,11 @@ class no_name(object):
         print("Merging dictionary files into single file.")
         result = []
         for f in glob.glob("*.json"):
-            with open(f, "rb") as infile:
+            with open(f, "r") as infile:
+                print("Current file: %s", f)
                 result.append(json.load(infile))
 
-        with open("merged_file.json", "wb") as outfile:
+        with open("merged_file.txt", "w") as outfile:
             json.dump(result, outfile)
 
     def check_options(self):
