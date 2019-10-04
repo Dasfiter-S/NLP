@@ -25,9 +25,12 @@ def launch_options():
 
 
 class no_name(object):
+    def __init__(self):
+        self.data = ""
+
     def load_file(self, file_in):
         with open(file_in, 'r') as f:
-            info = json.loads(f)
+            info = json.load(f)
             return info
 
     def merge_files(self):
@@ -41,19 +44,25 @@ class no_name(object):
         with open("merged_file.txt", "w") as outfile:
             json.dump(result, outfile)
 
-    def check_options(self):
+    def check_options(self, file_in=None):
         if arg_options.merge:
             self.merge_files()
-        #if arg_options.file is not None:
-        #    json_data = test_item.load_file(file_in);
-        #if arg_options.recompute:
-        #    json_data = test_item.load_file(default_data);
+        if arg_options.file is not None:
+            self.data = self.load_file(file_in);
 
+    def search_word(self, word_in):
+        #print(self.data[word_in])
+        word = self.data[word_in]
+        print(word["MEANINGS"])
+        print(word["ANTONYMS"])
+        print(word["SYNONYMS"])
 
 if __name__ == "__main__":
     arg_options = launch_options()
     test = no_name()
-    test.check_options()
+    test.check_options(arg_options.file)
+    test.search_word(arg_options.synonym.upper()) #dictionary is all uppercase    
+     
     #Not always needed, only needed when recomputing the tables
     #processed_data = find_connections(data);
     #Synthetic neural mesh??
