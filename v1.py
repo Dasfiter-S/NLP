@@ -13,7 +13,7 @@ def launch_options():
     parser.add_argument('-r', '--recompute', help='Load default data file and compute\
                         again.', default=False)
     parser.add_argument('-m', '--merge', help="Merge dictionary files into single json\
-                        file.", default=False)
+                        file.", action='store_true')
     
     arg = parser.parse_args()
     if arg.synonym is None and arg.recompute and arg.merge:
@@ -25,16 +25,12 @@ def launch_options():
 
 
 class no_name(object):
-    def load_file(file_in):
+    def load_file(self, file_in):
         with open(file_in, 'r') as f:
             info = json.loads(f)
             return info
 
-    def char_range(char1, char2):
-        for c in range(ord(char1), ord(char2) + 1):
-            yield chr(c)
-
-    def merge_files():
+    def merge_files(self):
         print("Merging dictionary files into single file.")
         result = []
         for f in glob.glob("*.json"):
@@ -44,9 +40,9 @@ class no_name(object):
         with open("merged_file.json", "wb") as outfile:
             json.dump(result, outfile)
 
-    def check_options():
+    def check_options(self):
         if arg_options.merge:
-            merge_files()
+            self.merge_files()
         #if arg_options.file is not None:
         #    json_data = test_item.load_file(file_in);
         #if arg_options.recompute:
