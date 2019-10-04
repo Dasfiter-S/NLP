@@ -1,7 +1,7 @@
 #import tensorflow as tf
 import argparse
+import glob
 import json
-import 
 
 #commandline options
 def launch_options():
@@ -12,11 +12,16 @@ def launch_options():
                         to recompute the tables however.', type=str)
     parser.add_argument('-r', '--recompute', help='Load default data file and compute\
                         again.', default=False)
+    parser.add_argument('-m', '--merge', help="Merge dictionary files into single json\
+                        file.", default=False)
+    
     arg = parser.parse_args()
-    if arg.synonym is None and arg.recompute:
-        print("Nothing to do. No word given.")
+    if arg.synonym is None and arg.recompute and arg.merge:
+        print("Nothing to do. Give a word, merge json files or recompute.")
         exit()
     return arg
+
+    
 
 
 class no_name(object):
@@ -25,16 +30,33 @@ class no_name(object):
             info = json.loads(f)
             return info
 
+    def char_range(char1, char2):
+        for c in range(ord(char1), ord(char2) + 1):
+            yield chr(c)
+
+    def merge_files():
+        print("Merging dictionary files into single file.")
+        result = []
+        for f in glob.glob("*.json"):
+            with open(f, "rb") as infile:
+                result.append(json.load(infile))
+
+        with open("merged_file.json", "wb") as outfile:
+            json.dump(result, outfile)
+
+    def check_options():
+        if arg_options.merge:
+            merge_files()
+        #if arg_options.file is not None:
+        #    json_data = test_item.load_file(file_in);
+        #if arg_options.recompute:
+        #    json_data = test_item.load_file(default_data);
+
 
 if __name__ == "__main__":
     arg_options = launch_options()
-    json_data = ""
-    default_data = "DA.json"
-    if arg_options.file is not None:
-        json_data = test_item.load_file(file_in);
-    if arg_options.recompute:
-        json_data = test_item.load_file(default_data);
-
+    test = no_name()
+    test.check_options()
     #Not always needed, only needed when recomputing the tables
     #processed_data = find_connections(data);
     #Synthetic neural mesh??
